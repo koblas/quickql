@@ -33,7 +33,6 @@ type PParen struct {
 
 type PExpr struct {
 	primary
-	// FieldExpr           <- field:Identifier _ op:CmpOp _ value:Value             { return parseFieldExpression(field, op, value) }
 	Field *Identifier `parser:"@@"`
 	Op    string      `parser:"@('<=' | '<' | '>' | '>=' | ':' | '=' | '~' | '!=' | '!~')"`
 	Value *Value      `parser:"@@"`
@@ -41,7 +40,6 @@ type PExpr struct {
 
 type PValue struct {
 	primary
-	// BoolFieldExpr       <- field:Identifier                                      { return parseBoolFieldExpr(field) }
 	Expr *Value `parser:"@@"`
 }
 
@@ -56,7 +54,6 @@ type EValue struct {
 }
 
 type Identifier struct {
-	// Identifier          <- AlphaNumeric ("." AlphaNumeric)*                      { return Identifier(c.text), nil }
 	Value []string `parser:"@IDENT ('.' @IDENT)*"`
 }
 

@@ -1748,3 +1748,45 @@ quickql.Expr{
   },
 }
 ---
+
+[TestParse/obj.prop=world - 1]
+quickql.Expr{
+  LogicExpr: &quickql.OrLogicExpr{
+    Expr: []*quickql.AndLogicExpr{
+      &quickql.AndLogicExpr{
+        Expr: []quickql.primary{
+          quickql.PValue{
+            Expr: &quickql.Value{
+              VString: "",
+              VValue: []string{
+                "obj.prop",
+              },
+              VIdentifier: nil,
+            },
+          },
+          quickql.PValue{
+            Expr: &quickql.Value{
+              VString: "",
+              VValue: []string{
+                "=",
+              },
+              VIdentifier: nil,
+            },
+          },
+          quickql.PValue{
+            Expr: &quickql.Value{
+              VString: "",
+              VValue: nil,
+              VIdentifier: &quickql.Identifier{
+                Value: []string{
+                  "world",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+---

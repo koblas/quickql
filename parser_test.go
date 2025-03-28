@@ -22,6 +22,7 @@ func TestParse(t *testing.T) {
 		{input: `country=🇨🇦`},
 		{input: `hello = world`},
 		{input: `hello!=world`},
+		{input: `obj.prop=world`},
 		{input: `hello != world`},
 		{input: `hello<world`},
 		{input: `hello<=world`},
