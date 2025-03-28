@@ -1,0 +1,68 @@
+
+[TestBasicLexer/hello=world - 1]
+[]string{"Token{IDENT, \"hello\"}", "Token{VALUE, \"=\"}", "Token{IDENT, \"world\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/hello_=_world - 1]
+[]string{"Token{IDENT, \"hello\"}", "Token{VALUE, \"=\"}", "Token{IDENT, \"world\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/hello:world - 1]
+[]string{"Token{IDENT, \"hello\"}", "Token{VALUE, \"=\"}", "Token{IDENT, \"world\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/hello<world - 1]
+[]string{"Token{IDENT, \"hello\"}", "Token{VALUE, \"<\"}", "Token{IDENT, \"world\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/hello_=_[world] - 1]
+[]string{"Token{IDENT, \"hello\"}", "Token{VALUE, \"=\"}", "Token{VALUE, \"[world]\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/hello_!=_[world] - 1]
+[]string{"Token{IDENT, \"hello\"}", "Token{VALUE, \"!=\"}", "Token{VALUE, \"[world]\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/hello:66e839032fb119d31dc9c968 - 1]
+[]string{"Token{IDENT, \"hello\"}", "Token{VALUE, \"=\"}", "Token{VALUE, \"66e839032fb119d31dc9c968\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/foo_bar - 1]
+[]string{"Token{IDENT, \"foo\"}", "Token{IDENT, \"bar\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/"foo_bar" - 1]
+[]string{"Token{STRING, \"foo bar\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/"foo_\"bar\"" - 1]
+[]string{"Token{STRING, \"foo \\\"bar\\\"\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/foo_OR_bar - 1]
+[]string{"Token{IDENT, \"foo\"}", "Token{IDENT, \"OR\"}", "Token{IDENT, \"bar\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/-10 - 1]
+[]string{"Token{VALUE, \"-10\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/-10.7 - 1]
+[]string{"Token{VALUE, \"-10.7\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/10.7 - 1]
+[]string{"Token{VALUE, \"10.7\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/hello:world_foo:bar - 1]
+[]string{"Token{IDENT, \"hello\"}", "Token{VALUE, \"=\"}", "Token{IDENT, \"world\"}", "Token{IDENT, \"foo\"}", "Token{VALUE, \"=\"}", "Token{IDENT, \"bar\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/-hello:world - 1]
+[]string{"Token{VALUE, \"NOT\"}", "Token{IDENT, \"hello\"}", "Token{VALUE, \"=\"}", "Token{IDENT, \"world\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/name_=_"Bob"_and_(age_>_20_or_age_<_5) - 1]
+[]string{"Token{IDENT, \"name\"}", "Token{VALUE, \"=\"}", "Token{STRING, \"Bob\"}", "Token{IDENT, \"and\"}", "Token{LPAREN, \"(\"}", "Token{IDENT, \"age\"}", "Token{VALUE, \">\"}", "Token{VALUE, \"20\"}", "Token{IDENT, \"or\"}", "Token{IDENT, \"age\"}", "Token{VALUE, \"<\"}", "Token{VALUE, \"5\"}", "Token{RPAREN, \")\"}", "Token{EOF, \"\"}"}
+---

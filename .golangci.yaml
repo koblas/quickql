@@ -1,0 +1,66 @@
+version: "2"
+linters:
+  default: all
+  disable:
+    - cyclop
+    - depguard
+    - dupl
+    - exhaustruct
+    - forcetypeassert
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - gocyclo
+    - godox
+    - ireturn
+    - mnd
+    - nestif
+    - nlreturn
+    - paralleltest
+    - protogetter
+    - tagliatelle
+    - testpackage
+    - varnamelen
+    - wsl
+  settings:
+    gocritic:
+      disabled-checks:
+        - commentFormatting
+    lll:
+      line-length: 200
+    nestif:
+      min-complexity: 12
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - wrapcheck
+        path: _test.go
+      - linters:
+          - lll
+        source: '^//go:generate '
+    paths:
+      - internal/gen
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - internal/gen
+      - third_party$
+      - builtin$
+      - examples$
