@@ -1790,3 +1790,89 @@ quickql.Expr{
   },
 }
 ---
+
+[TestParse/foo:*bar* - 1]
+quickql.Expr{
+  LogicExpr: &quickql.OrLogicExpr{
+    Expr: []*quickql.AndLogicExpr{
+      &quickql.AndLogicExpr{
+        Expr: []quickql.primary{
+          quickql.PExpr{
+            Field: &quickql.Identifier{
+              Value: []string{
+                "foo",
+              },
+            },
+            Op: "=",
+            Value: &quickql.Value{
+              VString: "",
+              VValue: []string{
+                "*bar*",
+              },
+              VIdentifier: nil,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+---
+
+[TestParse/foo:bar* - 1]
+quickql.Expr{
+  LogicExpr: &quickql.OrLogicExpr{
+    Expr: []*quickql.AndLogicExpr{
+      &quickql.AndLogicExpr{
+        Expr: []quickql.primary{
+          quickql.PExpr{
+            Field: &quickql.Identifier{
+              Value: []string{
+                "foo",
+              },
+            },
+            Op: "=",
+            Value: &quickql.Value{
+              VString: "",
+              VValue: []string{
+                "bar*",
+              },
+              VIdentifier: nil,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+---
+
+[TestParse/-hello:77 - 1]
+quickql.Expr{
+  LogicExpr: &quickql.OrLogicExpr{
+    Expr: []*quickql.AndLogicExpr{
+      &quickql.AndLogicExpr{
+        Expr: []quickql.primary{
+          quickql.PNot{
+            Expr: quickql.PExpr{
+              Field: &quickql.Identifier{
+                Value: []string{
+                  "hello",
+                },
+              },
+              Op: "=",
+              Value: &quickql.Value{
+                VString: "",
+                VValue: []string{
+                  "77",
+                },
+                VIdentifier: nil,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+---
