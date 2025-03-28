@@ -10,6 +10,12 @@ Examples ->
 - `foo=1 OR bar=2`
 - `(foo=1 OR bar=2) baz=3`
 
+## Expression
+
+- `and`, `AND` -- binary expression
+- `or`, `OR` -- binary expression
+- `NOT` -- unary expression
+
 ## Operators
 
 The logic for these doesn't exist, but these represent operators that are pulled into the AST
@@ -17,6 +23,7 @@ The logic for these doesn't exist, but these represent operators that are pulled
 - equality: `:`, `=`, `!=` (these are distinct, but should be equals)
 - comparison: `<`, `>` `<=` `>=`
 - like: `~`, `!~`
+- `-` for negation of terms e.g. `-fish` (if you don't like fish) which should be the same as `NOT fish`
 
 ## Grouping
 
