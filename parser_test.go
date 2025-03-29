@@ -72,7 +72,8 @@ func TestParse(t *testing.T) {
 			}
 			require.NoError(t, err)
 
-			snaps.MatchSnapshot(t, litter.Sdump(got))
+			// snaps.MatchSnapshot(t, litter.Sdump(got))
+			snaps.MatchSnapshot(t, got.AsSExpr())
 		})
 	}
 }
@@ -83,10 +84,10 @@ func TestSmoke(t *testing.T) {
 	// input := "cat!=dog ( foo>1 AND bar<2 and cat=fish) OR ( baz<=3 AND qux>=4 )"
 	// input := " foo>1 AND bar < 2 "
 	// input := `hello="world\\fish"`
-	input := `bar:*back`
+	input := `obj.prop=world`
 
 	got, trace, err := ParseDebug(input)
-	if err != nil {
+	if err != nil || true {
 		t.Log("\n" + trace)
 	}
 	require.NoError(t, err, input)

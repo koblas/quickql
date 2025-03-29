@@ -83,7 +83,8 @@ func TestFailLexer(t *testing.T) {
 }
 
 func TestSimple(t *testing.T) {
-	input := `(fish!=food)`
+	input := `obj.prop=world`
+	// input := `(fish!=food)`
 	// input := `-hello:world`
 	l, err := queryLexer.Lex("", strings.NewReader(input))
 	require.NoError(t, err)

@@ -115,7 +115,7 @@ func (l *Lexer) readIdentifer(ch rune, buffer []rune) (string, lexer.TokenType) 
 
 	for l.ch != 0 && !isWhitespace(l.ch) && !isOperator(l.ch) {
 		buffer = append(buffer, ch)
-		if !isAlpha(ch) {
+		if !isAlpha(ch) && ch != '.' {
 			tok = VALUE
 		}
 

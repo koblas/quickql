@@ -8,22 +8,61 @@ import (
 )
 
 type Expr struct {
-	LogicExpr *OrLogicExpr `parser:"@@"`
+	LogicExpr *AndLogicExpr `parser:"@@"`
+}
+
+func (obj *Expr) AsSExpr() string {
+	if obj.LogicExpr == nil {
+		return ""
+	}
+
+	return obj.LogicExpr.asSExpr()
 }
 
 type OrLogicExpr struct {
-	Expr []*AndLogicExpr `parser:"@@ (('OR'|'or') @@)*"`
+	Expr []primary `parser:"@@ (('OR'|'or') @@)*"`
+}
+
+func (obj *OrLogicExpr) asSExpr() string {
+	if len(obj.Expr) == 1 {
+		return obj.Expr[0].asSExpr()
+	}
+
+	var exprs []string
+	for _, e := range obj.Expr {
+		exprs = append(exprs, e.asSExpr())
+	}
+
+	return fmt.Sprintf("(or %s)", strings.Join(exprs, " "))
 }
 
 type AndLogicExpr struct {
-	Expr []primary `parser:"@@ ((('AND'|'and') @@) | @@)*"`
+	Expr []OrLogicExpr `parser:"@@ ((('AND'|'and') @@) | @@)*"`
+	// Expr []OrLogicExpr `parser:"@@ (('AND'|'and') @@)*"`
 }
 
-type primary interface{ isPrimary() }
+func (obj *AndLogicExpr) asSExpr() string {
+	if len(obj.Expr) == 1 {
+		return obj.Expr[0].asSExpr()
+	}
+
+	var exprs []string
+	for _, e := range obj.Expr {
+		exprs = append(exprs, e.asSExpr())
+	}
+
+	return fmt.Sprintf("(and %s)", strings.Join(exprs, " "))
+}
+
+type primary interface{ asSExpr() string }
 
 type PNot struct {
 	primary
 	Expr primary `parser:"('NOT'|'not') @@"`
+}
+
+func (obj PNot) asSExpr() string {
+	return fmt.Sprintf("(NOT %s)", obj.Expr.asSExpr())
 }
 
 type PParen struct {
@@ -31,11 +70,19 @@ type PParen struct {
 	Expr *Expr `parser:"'(' @@ ')'"`
 }
 
+func (obj PParen) asSExpr() string {
+	return fmt.Sprintf("%s", obj.Expr.AsSExpr())
+}
+
 type PExpr struct {
 	primary
-	Field *Identifier `parser:"@@"`
-	Op    string      `parser:"@('<=' | '<' | '>' | '>=' | ':' | '=' | '~' | '!=' | '!~')"`
-	Value *Value      `parser:"@@"`
+	Field Identifier `parser:"@@"`
+	Op    string     `parser:"@('<=' | '<' | '>' | '>=' | ':' | '=' | '~' | '!=' | '!~')"`
+	Value Value      `parser:"@@"`
+}
+
+func (obj PExpr) asSExpr() string {
+	return fmt.Sprintf("(%s %s %q)", obj.Op, obj.Field.String(), obj.Value.String())
 }
 
 type PValue struct {
@@ -43,19 +90,40 @@ type PValue struct {
 	Expr *Value `parser:"@@"`
 }
 
+func (obj PValue) asSExpr() string {
+	return fmt.Sprintf("(keyword %s)", obj.Expr.String())
+}
+
 type Value struct {
-	VString     string      `parser:"(@STRING"`
-	VValue      []string    `parser:"| @VALUE"`
+	VString     *string     `parser:"(@STRING"`
+	VValue      *string     `parser:"| @VALUE"`
 	VIdentifier *Identifier `parser:"| @@ )"`
 }
 
-type EValue struct {
-	Value []string `parser:"@AlphaNumeric | (@Char+ @AlphaNumeric?)"`
+func (obj *Value) String() string {
+	if obj.VString != nil {
+		return *obj.VString
+	}
+	if obj.VValue != nil {
+		return *obj.VValue
+	}
+	if obj.VIdentifier != nil {
+		return obj.VIdentifier.String()
+	}
+
+	panic("unknown value")
 }
 
 type Identifier struct {
 	Value []string `parser:"@IDENT ('.' @IDENT)*"`
 }
+
+func (obj *Identifier) String() string {
+	return strings.Join(obj.Value, ".")
+}
+
+//
+//
 
 var parser = participle.MustBuild[Expr](
 	participle.Lexer(queryLexer),
