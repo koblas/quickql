@@ -208,3 +208,15 @@ quickql.Expr{
   },
 }
 ---
+
+[TestParse/hello_>_-77 - 1]
+(> hello "-77")
+---
+
+[TestParse/hello_>_-77.003 - 1]
+(> hello "-77.003")
+---
+
+[TestParse/hello_>__77 - 1]
+(> hello "77")
+---
