@@ -30,6 +30,9 @@ func TestBasicLexer(t *testing.T) {
 		{input: "hello:world\nfoo:bar"},
 		{input: "-hello:world"},
 		{input: `name = "Bob" and (age > 20 or age < 5)`},
+		{input: "="},
+		{input: "~"},
+		{input: "foo ~ bar"},
 	}
 
 	queryLexer := NewLexer()

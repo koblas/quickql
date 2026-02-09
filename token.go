@@ -7,19 +7,30 @@ import (
 )
 
 const (
-	EOF                     = lexer.EOF
+	EOF = lexer.EOF
+)
+
+const (
 	ILLEGAL lexer.TokenType = iota
 
-	// Whitespace.
+	// WS = Whitespace.
 	WS
 
-	// Operators.
+	// LPAREN is "(".
 	LPAREN
+	// RPAREN is ")".
 	RPAREN
 
+	// STRING is a quoted string.
 	STRING
+	// IDENT is non-quoted value.
 	IDENT
+	// VALUE is a numeric constant e.g. 7, -7, -77.77.
 	VALUE
+	// OP is any operator (e.g. =, ~, !=).
+	OP
+	// KEYWORD is a reserved word (AND, OR, NOT).
+	KEYWORD
 )
 
 func Symbols() map[string]lexer.TokenType {
@@ -32,6 +43,7 @@ func Symbols() map[string]lexer.TokenType {
 		"STRING":  STRING,
 		"IDENT":   IDENT,
 		"VALUE":   VALUE,
+		"KEYWORD": KEYWORD,
 	}
 
 	return lexTokens
@@ -55,6 +67,10 @@ func TokenName(token lexer.Token) string {
 		return "IDENT"
 	case VALUE:
 		return "VALUE"
+	case OP:
+		return "OP"
+	case KEYWORD:
+		return "KEYWORD"
 	}
 
 	panic("unknown token type")

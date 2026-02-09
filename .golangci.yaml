@@ -24,6 +24,7 @@ linters:
     - testpackage
     - varnamelen
     - wsl
+    - wsl_v5
   settings:
     gocritic:
       disabled-checks:

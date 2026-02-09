@@ -3,16 +3,20 @@
 
 ---
 
+[TestParse/____ - 1]
+
+---
+
 [TestParse/one_two_three - 1]
-(and (keyword one) (keyword two) (keyword three))
+(and (value one) (value two) (value three))
 ---
 
 [TestParse/François - 1]
-(keyword François)
+(value François)
 ---
 
 [TestParse/one_🇨🇦_three - 1]
-(and (keyword one) (keyword 🇨🇦) (keyword three))
+(and (value one) (value 🇨🇦) (value three))
 ---
 
 [TestParse/hello:world - 1]
@@ -68,11 +72,11 @@
 ---
 
 [TestParse/hello - 1]
-(keyword hello)
+(value hello)
 ---
 
 [TestParse/hello_world - 1]
-(and (keyword hello) (keyword world))
+(and (value hello) (value world))
 ---
 
 [TestParse/hello:world_AND_super:cool - 1]
@@ -112,11 +116,11 @@
 ---
 
 [TestParse/hello:world_or_cool - 1]
-(or (= hello "world") (keyword cool))
+(or (= hello "world") (value cool))
 ---
 
 [TestParse/world_OR_super:cool - 1]
-(or (keyword world) (= super "cool"))
+(or (value world) (= super "cool"))
 ---
 
 [TestParse/hello:66e839032fb119d31dc9c968 - 1]
@@ -144,11 +148,11 @@
 ---
 
 [TestParse/panic_NOT_ever - 1]
-(and (keyword panic) (NOT (keyword ever)))
+(and (value panic) (NOT (value ever)))
 ---
 
 [TestParse/repo:has.commit.after(yesterday) - 1]
-(and (= repo "has.commit.after") (keyword yesterday))
+(and (= repo "has.commit.after") (value yesterday))
 ---
 
 [TestParse/hello>=3_OR_world<=4.7 - 1]
@@ -164,7 +168,7 @@
 ---
 
 [TestParse/name_eq_"Bill" - 1]
-(and (keyword name) (keyword eq) (keyword Bill))
+(and (value name) (value eq) (value Bill))
 ---
 
 [TestParse/name_=_"Bob"_and_(age_>_20_or_age_<_5) - 1]
@@ -179,34 +183,8 @@
 (and (!= cat "dog") (or (and (> foo "1") (< bar "2") (= cat "fish")) (and (<= baz "3") (>= qux "4"))))
 ---
 
-[TestSmoke - 1]
-quickql.Expr{
-  LogicExpr: &quickql.AndLogicExpr{
-    Expr: []quickql.OrLogicExpr{
-      quickql.OrLogicExpr{
-        Expr: []quickql.primary{
-          quickql.PExpr{
-            Field: quickql.Identifier{
-              Value: []string{
-                "obj.prop",
-              },
-            },
-            Op: "=",
-            Value: quickql.Value{
-              VString: nil,
-              VValue: nil,
-              VIdentifier: &quickql.Identifier{
-                Value: []string{
-                  "world",
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-}
+[TestParse/hello_>__77 - 1]
+(> hello "77")
 ---
 
 [TestParse/hello_>_-77 - 1]
@@ -217,6 +195,64 @@ quickql.Expr{
 (> hello "-77.003")
 ---
 
-[TestParse/hello_>__77 - 1]
-(> hello "77")
+[TestParse/hello_>_-77.003.123 - 1]
+(> hello "-77.003.123")
+---
+
+[TestParse/NOT_(foo_OR_bar) - 1]
+(NOT (or (value foo) (value bar)))
+---
+
+[TestParse/NOT_NOT_foo - 1]
+(NOT (NOT (value foo)))
+---
+
+[TestParse/((foo_=_bar)) - 1]
+(= foo "bar")
+---
+
+[TestParse/"AND" - 1]
+(value AND)
+---
+
+[TestParse/foo_=_"hello_world"_bar - 1]
+(and (= foo "hello world") (value bar))
+---
+
+[TestParse/a_OR_b_AND_c_OR_d - 1]
+(and (or (value a) (value b)) (or (value c) (value d)))
+---
+
+[TestParse/a..b_=_c - 1]
+(= a..b "c")
+---
+
+[TestParse/hello\"world - 1]
+(value hello\"world)
+---
+
+[TestSmoke - 1]
+quickql.Expr{
+  LogicExpr: &quickql.AndLogicExpr{
+    Expr: []quickql.OrLogicExpr{
+      quickql.OrLogicExpr{
+        Expr: []quickql.primary{
+          quickql.PExpr{
+            Field: quickql.Identifier{
+              Value: "obj.prop",
+            },
+            Op: "=",
+            Value: quickql.Value{
+              VString: nil,
+              VValue: nil,
+              VIdentifier: &quickql.Identifier{
+                Value: "world",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
 ---

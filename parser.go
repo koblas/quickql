@@ -8,7 +8,7 @@ import (
 )
 
 type Expr struct {
-	LogicExpr *AndLogicExpr `parser:"@@"`
+	LogicExpr *AndLogicExpr `parser:"@@ | EOF"`
 }
 
 func (obj *Expr) AsSExpr() string {
@@ -57,7 +57,6 @@ func (obj *AndLogicExpr) asSExpr() string {
 type primary interface{ asSExpr() string }
 
 type PNot struct {
-	primary
 	Expr primary `parser:"('NOT'|'not') @@"`
 }
 
@@ -66,18 +65,16 @@ func (obj PNot) asSExpr() string {
 }
 
 type PParen struct {
-	primary
 	Expr *Expr `parser:"'(' @@ ')'"`
 }
 
 func (obj PParen) asSExpr() string {
-	return fmt.Sprintf("%s", obj.Expr.AsSExpr())
+	return obj.Expr.AsSExpr()
 }
 
 type PExpr struct {
-	primary
 	Field Identifier `parser:"@@"`
-	Op    string     `parser:"@('<=' | '<' | '>' | '>=' | ':' | '=' | '~' | '!=' | '!~')"`
+	Op    string     `parser:"@('<=' | '<' | '>' | '>=' | '=' | '~' | '!=' | '!~')"`
 	Value Value      `parser:"@@"`
 }
 
@@ -86,12 +83,11 @@ func (obj PExpr) asSExpr() string {
 }
 
 type PValue struct {
-	primary
 	Expr *Value `parser:"@@"`
 }
 
 func (obj PValue) asSExpr() string {
-	return fmt.Sprintf("(keyword %s)", obj.Expr.String())
+	return fmt.Sprintf("(value %s)", obj.Expr.String())
 }
 
 type Value struct {
@@ -115,11 +111,11 @@ func (obj *Value) String() string {
 }
 
 type Identifier struct {
-	Value []string `parser:"@IDENT ('.' @IDENT)*"`
+	Value string `parser:"@IDENT"`
 }
 
 func (obj *Identifier) String() string {
-	return strings.Join(obj.Value, ".")
+	return obj.Value
 }
 
 //

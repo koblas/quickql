@@ -56,7 +56,7 @@ func (base *BaseLexer) Symbols() map[string]lexer.TokenType {
 	return Symbols()
 }
 
-// Return the interface type.
+// Lex returns the interface type.
 func (base *BaseLexer) Lex(filename string, r io.Reader) (lexer.Lexer, error) {
 	l := &Lexer{
 		filename: filename,
@@ -69,7 +69,7 @@ func (base *BaseLexer) Lex(filename string, r io.Reader) (lexer.Lexer, error) {
 	return l, nil
 }
 
-// Convert to participle's lexer interface.
+// Next converts to participle's lexer interface.
 func (l *Lexer) Next() (lexer.Token, error) {
 	p, t, value := l.Scan()
 	pos := lexer.Position{
@@ -123,7 +123,15 @@ func (l *Lexer) readIdentifer(ch rune, buffer []rune) (string, lexer.TokenType) 
 		ch = l.peek()
 	}
 
-	return string(buffer), tok
+	val := string(buffer)
+	if tok == IDENT {
+		switch val {
+		case "AND", "and", "OR", "or", "NOT", "not":
+			tok = KEYWORD
+		}
+	}
+
+	return val, tok
 }
 
 // Scan the input and return the next token all value tokens should be normalized
@@ -140,7 +148,7 @@ func (l *Lexer) scan() (Position, lexer.TokenType, string) {
 		return pos, EOF, ""
 	}
 
-	tok := VALUE // typical case
+	var tok lexer.TokenType
 	var val string
 
 	switch ch := l.next(); ch {
@@ -167,14 +175,17 @@ func (l *Lexer) scan() (Position, lexer.TokenType, string) {
 	// handle operators
 	case '~':
 		val = "~"
+		tok = OP
 	case '!':
 		switch l.ch {
 		case '=':
 			l.next()
 			val = "!="
+			tok = OP
 		case '~':
 			l.next()
 			val = "!~"
+			tok = OP
 		default:
 			tok = ILLEGAL
 			val = "operator ! must be followed by = or ~"
@@ -182,12 +193,14 @@ func (l *Lexer) scan() (Position, lexer.TokenType, string) {
 	case ':':
 		// this is from the `key:value` syntax, convert to a regular =
 		val = "="
+		tok = OP
 	case '=':
 		if l.consumeIf('=') {
 			tok = ILLEGAL
 			val = "double == not allowed"
 		} else {
 			val = "="
+			tok = OP
 		}
 	case '<':
 		if l.consumeIf('=') {
@@ -195,12 +208,14 @@ func (l *Lexer) scan() (Position, lexer.TokenType, string) {
 		} else {
 			val = "<"
 		}
+		tok = OP
 	case '>':
 		if l.consumeIf('=') {
 			val = ">="
 		} else {
 			val = ">"
 		}
+		tok = OP
 
 	// `-` can be either a NOT or a negative number
 	case '-':
@@ -209,6 +224,7 @@ func (l *Lexer) scan() (Position, lexer.TokenType, string) {
 			val, tok = l.readIdentifer(ch, chars)
 		} else {
 			val = "NOT"
+			tok = KEYWORD
 		}
 	// pretty much everything else is an identifier or value
 	default:

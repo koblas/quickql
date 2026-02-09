@@ -13,6 +13,7 @@ func TestParse(t *testing.T) {
 		input string
 	}{
 		{input: ``},
+		{input: `    `},
 		{input: `one two three`},
 		{input: `François`},
 		{input: `one 🇨🇦 three`},
@@ -61,6 +62,15 @@ func TestParse(t *testing.T) {
 		{input: `hello >  77`},
 		{input: `hello > -77`},
 		{input: `hello > -77.003`},
+		{input: `hello > -77.003.123`},
+		{input: `NOT (foo OR bar)`},
+		{input: `NOT NOT foo`}, //nolint:dupword
+		{input: `((foo = bar))`},
+		{input: `"AND"`},
+		{input: `foo = "hello world" bar`},
+		{input: `a OR b AND c OR d`},
+		{input: `a..b = c`},
+		{input: `hello\"world`},
 		// {input: `class = [0, 100000] AND subclass = 1001`},
 		// {input: `type = [ '0','1' ] and subType = [ '1007' ] and createdAt gte '2024-12-07T00:16:00+05:30' and createdAt lte '2024-12-08T00:16:59+05:30'`},
 		// {input: `name ne "Bob"`},
@@ -77,6 +87,31 @@ func TestParse(t *testing.T) {
 
 			// snaps.MatchSnapshot(t, litter.Sdump(got))
 			snaps.MatchSnapshot(t, got.AsSExpr())
+		})
+	}
+}
+
+func TestParseError(t *testing.T) {
+	tests := []struct {
+		input string
+	}{
+		{input: `~`},
+		{input: `=`},
+		{input: `NOT`},
+		{input: `OR`},
+		{input: `OR foo`},
+		{input: `(foo`},
+		{input: `foo)`},
+		{input: `foo=`},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.input, func(t *testing.T) {
+			_, trace, err := ParseDebug(tc.input)
+			if err != nil {
+				t.Log("\n" + trace)
+			}
+			require.Error(t, err)
 		})
 	}
 }
