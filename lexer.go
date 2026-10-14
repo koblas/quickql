@@ -23,6 +23,8 @@ type Lexer struct {
 	pos      Position
 	nextPos  Position
 	ch       rune
+	// err is set when the input can't be read (or contains a NUL), it ends lexing.
+	err error
 }
 
 var (
@@ -73,6 +75,10 @@ func (base *BaseLexer) Lex(filename string, r io.Reader) (lexer.Lexer, error) {
 // Next converts to participle's lexer interface.
 func (l *Lexer) Next() (lexer.Token, error) {
 	p, t, value := l.Scan()
+	if l.err != nil {
+		return lexer.Token{}, l.err
+	}
+
 	pos := lexer.Position{
 		Filename: l.filename,
 		Line:     p.Line,
@@ -253,7 +259,20 @@ func (l *Lexer) next() rune {
 	cur := l.ch
 
 	ch, _, err := l.reader.ReadRune()
-	if errors.Is(err, io.EOF) {
+	if err != nil || ch == 0 {
+		// a NUL rune is the internal EOF marker, so it can't appear in the input
+		if l.err == nil {
+			switch {
+			case err != nil && !errors.Is(err, io.EOF):
+				l.err = fmt.Errorf("read input: %w", err)
+			case err == nil:
+				l.err = LexerError{
+					Pos: lexer.Position{Filename: l.filename, Offset: 0, Line: l.pos.Line, Column: l.pos.Column},
+					Msg: "NUL byte not allowed",
+				}
+			}
+		}
+
 		if l.ch != 0 {
 			l.ch = 0
 			l.nextPos.Column++

@@ -1,10 +1,16 @@
 package quickql
 
 import (
+	"errors"
+	"fmt"
+	"io"
 	"strings"
+	"sync"
 	"testing"
+	"testing/iotest"
 
 	"github.com/alecthomas/participle/v2/lexer"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -200,7 +206,9 @@ func TestLexerEOFIsSticky(t *testing.T) {
 func TestSymbolsCoverAllTokenTypes(t *testing.T) {
 	symbols := Symbols()
 	for _, tt := range []lexer.TokenType{ILLEGAL, EOF, WS, LPAREN, RPAREN, STRING, IDENT, VALUE, OP, KEYWORD} {
-		name := TokenName(lexer.Token{Type: tt})
+		var tok lexer.Token
+		tok.Type = tt
+		name := TokenName(tok)
 		require.Contains(t, symbols, name)
 		require.Equal(t, tt, symbols[name])
 	}
@@ -284,8 +292,8 @@ func TestParseEdgeCaseErrors(t *testing.T) {
 		`a AND`,
 		`a OR`,
 		`AND a`,
-		`a AND AND b`,
-		`a OR OR b`,
+		`a AND AND b`, //nolint:dupword
+		`a OR OR b`,   //nolint:dupword
 		`-`,
 		`a NOT`,
 		// grouping
@@ -306,4 +314,91 @@ func TestParseEdgeCaseErrors(t *testing.T) {
 			require.Error(t, err)
 		})
 	}
+}
+
+func TestLexerRejectsNUL(t *testing.T) {
+	for _, input := range []string{"foo\x00bar", "\x00", `"a` + "\x00" + `b"`, "a b\x00"} {
+		t.Run(fmt.Sprintf("%q", input), func(t *testing.T) {
+			l, err := NewLexer().Lex("", strings.NewReader(input))
+			require.NoError(t, err)
+
+			_, err = lexer.ConsumeAll(l)
+			var lexErr LexerError
+			require.ErrorAs(t, err, &lexErr)
+			require.Equal(t, "NUL byte not allowed", lexErr.Msg)
+			require.Equal(t, strings.IndexByte(input, 0)+1, lexErr.Pos.Column)
+
+			_, err = Parse(input)
+			require.ErrorAs(t, err, &lexErr)
+		})
+	}
+}
+
+var errBoom = errors.New("boom")
+
+func TestLexerReaderError(t *testing.T) {
+	boom := errBoom
+
+	cases := map[string]io.Reader{
+		"first read": iotest.ErrReader(boom),
+		"mid input":  io.MultiReader(strings.NewReader("abc "), iotest.ErrReader(boom)),
+		"mid token":  io.MultiReader(strings.NewReader("abc"), iotest.ErrReader(boom)),
+		"in string":  io.MultiReader(strings.NewReader(`"abc`), iotest.ErrReader(boom)),
+	}
+
+	for name, r := range cases {
+		t.Run(name, func(t *testing.T) {
+			l, err := NewLexer().Lex("", r)
+			require.NoError(t, err)
+
+			_, err = lexer.ConsumeAll(l)
+			require.ErrorIs(t, err, boom)
+		})
+	}
+}
+
+func TestParseErrorTypes(t *testing.T) {
+	var lexErr LexerError
+
+	// lexer failures surface as a LexerError through Parse's wrapping
+	_, err := Parse(`foo!bar`)
+	require.ErrorAs(t, err, &lexErr)
+	require.Equal(t, 4, lexErr.Pos.Column)
+
+	_, err = Parse(`"open`)
+	require.ErrorAs(t, err, &lexErr)
+
+	// grammar failures do not
+	_, err = Parse(`a AND`)
+	require.Error(t, err)
+	require.NotErrorAs(t, err, &lexErr)
+
+	// ParseDebug reports the same errors and a trace
+	_, trace, err := ParseDebug(`a AND`)
+	require.Error(t, err)
+	require.NotEmpty(t, trace)
+}
+
+func TestParseEmpty(t *testing.T) {
+	for _, input := range []string{"", " ", "\t\r\n"} {
+		got, err := Parse(input)
+		require.NoError(t, err)
+		require.Nil(t, got.LogicExpr)
+		require.Empty(t, got.AsSExpr())
+	}
+}
+
+func TestParseConcurrent(t *testing.T) {
+	var wg sync.WaitGroup
+	for i := range 32 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			input := fmt.Sprintf(`f%d = %d OR (g AND NOT h)`, i, i)
+			got, err := Parse(input)
+			assert.NoError(t, err)
+			assert.Equal(t, fmt.Sprintf(`(or (= f%d "%d") (and (value g) (NOT (value h))))`, i, i), got.AsSExpr())
+		}()
+	}
+	wg.Wait()
 }
