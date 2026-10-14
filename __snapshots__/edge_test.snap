@@ -1,0 +1,132 @@
+
+[TestParseEdgeCases/field1=x - 1]
+(= field1 "x")
+---
+
+[TestParseEdgeCases/user_2.name:bob - 1]
+(= user_2.name "bob")
+---
+
+[TestParseEdgeCases/prénom=Zoé - 1]
+(= prénom "Zoé")
+---
+
+[TestParseEdgeCases/a1_>_5_AND_b2_<_6 - 1]
+(and (> a1 "5") (< b2 "6"))
+---
+
+[TestParseEdgeCases/foo="" - 1]
+(= foo "")
+---
+
+[TestParseEdgeCases/foo=-5 - 1]
+(= foo "-5")
+---
+
+[TestParseEdgeCases/foo>=-0.5 - 1]
+(>= foo "-0.5")
+---
+
+[TestParseEdgeCases/foo=* - 1]
+(= foo "*")
+---
+
+[TestParseEdgeCases/foo_=_"a=b" - 1]
+(= foo "a=b")
+---
+
+[TestParseEdgeCases/foo_=_"AND" - 1]
+(= foo "AND")
+---
+
+[TestParseEdgeCases/_a___b_ - 1]
+(and (value a) (value b))
+---
+
+[TestParseEdgeCases/__a__ - 1]
+(value a)
+---
+
+[TestParseEdgeCases/a_and_b - 1]
+(and (value a) (value b))
+---
+
+[TestParseEdgeCases/a_or_b - 1]
+(or (value a) (value b))
+---
+
+[TestParseEdgeCases/not_a - 1]
+(NOT (value a))
+---
+
+[TestParseEdgeCases/a_And_b - 1]
+(and (value a) (value And) (value b))
+---
+
+[TestParseEdgeCases/ANDROID - 1]
+(value ANDROID)
+---
+
+[TestParseEdgeCases/-a - 1]
+(NOT (value a))
+---
+
+[TestParseEdgeCases/-_a - 1]
+(NOT (value a))
+---
+
+[TestParseEdgeCases/-(a_OR_b) - 1]
+(NOT (or (value a) (value b)))
+---
+
+[TestParseEdgeCases/NOT_a=1 - 1]
+(NOT (= a "1"))
+---
+
+[TestParseEdgeCases/--5 - 1]
+(NOT (value -5))
+---
+
+[TestParseEdgeCases/a_-5 - 1]
+(and (value a) (value -5))
+---
+
+[TestParseEdgeCases/-a_-b - 1]
+(and (NOT (value a)) (NOT (value b)))
+---
+
+[TestParseEdgeCases/a_OR_b_c - 1]
+(and (or (value a) (value b)) (value c))
+---
+
+[TestParseEdgeCases/a_b_OR_c - 1]
+(and (value a) (or (value b) (value c)))
+---
+
+[TestParseEdgeCases/a_OR_b_OR_c - 1]
+(or (value a) (value b) (value c))
+---
+
+[TestParseEdgeCases/NOT_a_OR_b - 1]
+(or (NOT (value a)) (value b))
+---
+
+[TestParseEdgeCases/(a) - 1]
+(value a)
+---
+
+[TestParseEdgeCases/(a)(b) - 1]
+(and (value a) (value b))
+---
+
+[TestParseEdgeCases/(a_OR_b)c - 1]
+(and (or (value a) (value b)) (value c))
+---
+
+[TestParseEdgeCases/(a_b)_OR_c - 1]
+(or (and (value a) (value b)) (value c))
+---
+
+[TestParseEdgeCases/((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((a)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) - 1]
+(value a)
+---

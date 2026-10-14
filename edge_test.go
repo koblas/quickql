@@ -10,6 +10,7 @@ import (
 	"testing/iotest"
 
 	"github.com/alecthomas/participle/v2/lexer"
+	"github.com/gkampitakis/go-snaps/snaps"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -219,55 +220,55 @@ func TestSymbolsCoverAllTokenTypes(t *testing.T) {
 func TestParseEdgeCases(t *testing.T) {
 	cases := []struct {
 		input string
-		want  string
 	}{
 		// identifiers with digits / non-ASCII letters can be fields
-		{input: `field1=x`, want: `(= field1 "x")`},
-		{input: `user_2.name:bob`, want: `(= user_2.name "bob")`},
-		{input: `prénom=Zoé`, want: `(= prénom "Zoé")`},
-		{input: `a1 > 5 AND b2 < 6`, want: `(and (> a1 "5") (< b2 "6"))`},
+		{input: `field1=x`},
+		{input: `user_2.name:bob`},
+		{input: `prénom=Zoé`},
+		{input: `a1 > 5 AND b2 < 6`},
 		// values
-		{input: `foo=""`, want: `(= foo "")`},
-		{input: `foo=-5`, want: `(= foo "-5")`},
-		{input: `foo>=-0.5`, want: `(>= foo "-0.5")`},
-		{input: `foo=*`, want: `(= foo "*")`},
-		{input: `foo = "a=b"`, want: `(= foo "a=b")`},
-		{input: `foo = "AND"`, want: `(= foo "AND")`},
+		{input: `foo=""`},
+		{input: `foo=-5`},
+		{input: `foo>=-0.5`},
+		{input: `foo=*`},
+		{input: `foo = "a=b"`},
+		{input: `foo = "AND"`},
 		// whitespace
-		{input: "\ta\r\n\tb\n", want: `(and (value a) (value b))`},
-		{input: "  a  ", want: `(value a)`},
+		{input: "\ta\r\n\tb\n"},
+		{input: "  a  "},
 		// keywords
-		{input: `a and b`, want: `(and (value a) (value b))`},
-		{input: `a or b`, want: `(or (value a) (value b))`},
-		{input: `not a`, want: `(NOT (value a))`},
-		{input: `a And b`, want: `(and (value a) (value And) (value b))`},
-		{input: `ANDROID`, want: `(value ANDROID)`},
+		{input: `a and b`},
+		{input: `a or b`},
+		{input: `not a`},
+		{input: `a And b`},
+		{input: `ANDROID`},
 		// NOT / `-`
-		{input: `-a`, want: `(NOT (value a))`},
-		{input: `- a`, want: `(NOT (value a))`},
-		{input: `-(a OR b)`, want: `(NOT (or (value a) (value b)))`},
-		{input: `NOT a=1`, want: `(NOT (= a "1"))`},
-		{input: `--5`, want: `(NOT (value -5))`},
-		{input: `a -5`, want: `(and (value a) (value -5))`},
-		{input: `-a -b`, want: `(and (NOT (value a)) (NOT (value b)))`},
+		{input: `-a`},
+		{input: `- a`},
+		{input: `-(a OR b)`},
+		{input: `NOT a=1`},
+		{input: `--5`},
+		{input: `a -5`},
+		{input: `-a -b`},
 		// precedence: OR binds tighter than (implicit) AND
-		{input: `a OR b c`, want: `(and (or (value a) (value b)) (value c))`},
-		{input: `a b OR c`, want: `(and (value a) (or (value b) (value c)))`},
-		{input: `a OR b OR c`, want: `(or (value a) (value b) (value c))`},
-		{input: `NOT a OR b`, want: `(or (NOT (value a)) (value b))`},
+		{input: `a OR b c`},
+		{input: `a b OR c`},
+		{input: `a OR b OR c`},
+		{input: `NOT a OR b`},
 		// grouping
-		{input: `(a)`, want: `(value a)`},
-		{input: `(a)(b)`, want: `(and (value a) (value b))`},
-		{input: `(a OR b)c`, want: `(and (or (value a) (value b)) (value c))`},
-		{input: `(a b) OR c`, want: `(or (and (value a) (value b)) (value c))`},
-		{input: strings.Repeat("(", 200) + "a" + strings.Repeat(")", 200), want: `(value a)`},
+		{input: `(a)`},
+		{input: `(a)(b)`},
+		{input: `(a OR b)c`},
+		{input: `(a b) OR c`},
+		{input: strings.Repeat("(", 200) + "a" + strings.Repeat(")", 200)},
 	}
 
 	for _, c := range cases {
 		t.Run(c.input, func(t *testing.T) {
 			got, err := Parse(c.input)
 			require.NoError(t, err)
-			require.Equal(t, c.want, got.AsSExpr())
+
+			snaps.MatchSnapshot(t, got.AsSExpr())
 		})
 	}
 }
