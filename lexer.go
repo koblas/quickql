@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"unicode"
 
 	"github.com/alecthomas/participle/v2/lexer"
 )
@@ -104,10 +105,13 @@ func (l *Lexer) Scan() (Position, lexer.TokenType, string) {
 // the reason for differntiation is that "*foo < -12" (VALUE LT VALUE) is not valid
 // but "foo < -12" (IDENT LT VALUE) is valid and this is a good way to discrimitate
 // on the leading keyword.
+//
+// An identifier starts with a letter or `_` and continues with letters, digits,
+// `_` or `.` (e.g. "field1", "user_2.name", "prénom"); anything else is a VALUE.
 func (l *Lexer) readIdentifer(ch rune, buffer []rune) (string, lexer.TokenType) {
 	buffer = append(buffer, ch)
 	tok := IDENT
-	if isDigit(ch) {
+	if !isAlpha(ch) {
 		tok = VALUE
 	}
 
@@ -115,7 +119,7 @@ func (l *Lexer) readIdentifer(ch rune, buffer []rune) (string, lexer.TokenType) 
 
 	for l.ch != 0 && !isWhitespace(l.ch) && !isOperator(l.ch) {
 		buffer = append(buffer, ch)
-		if !isAlpha(ch) && ch != '.' {
+		if !isAlpha(ch) && !isDigit(ch) && ch != '.' {
 			tok = VALUE
 		}
 
@@ -309,8 +313,9 @@ func isDigit(ch rune) bool {
 	return ch >= '0' && ch <= '9'
 }
 
+// letters in any script, plus `_`.
 func isAlpha(ch rune) bool {
-	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_'
+	return unicode.IsLetter(ch) || ch == '_'
 }
 
 func isWhitespace(ch rune) bool {
