@@ -49,6 +49,8 @@ func TestLexerIdentifierClassification(t *testing.T) {
 		{input: "prénom", want: []string{"IDENT:prénom"}},
 		{input: "François", want: []string{"IDENT:François"}},
 		{input: "имя", want: []string{"IDENT:имя"}},
+		{input: "prénom", want: []string{"IDENT:prénom"}},
+		{input: "́x", want: []string{"VALUE:́x"}},
 		// a leading digit or symbol is a VALUE
 		{input: "1field", want: []string{"VALUE:1field"}},
 		{input: "*foo", want: []string{"VALUE:*foo"}},
