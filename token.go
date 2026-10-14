@@ -43,6 +43,7 @@ func Symbols() map[string]lexer.TokenType {
 		"STRING":  STRING,
 		"IDENT":   IDENT,
 		"VALUE":   VALUE,
+		"OP":      OP,
 		"KEYWORD": KEYWORD,
 	}
 

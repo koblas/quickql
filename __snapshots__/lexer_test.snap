@@ -78,3 +78,227 @@
 [TestBasicLexer/foo_~_bar - 1]
 []string{"Token{IDENT, \"foo\"}", "Token{OP, \"~\"}", "Token{IDENT, \"bar\"}", "Token{EOF, \"\"}"}
 ---
+
+[TestBasicLexer/field1 - 1]
+[]string{"Token{IDENT, \"field1\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/user_2.name - 1]
+[]string{"Token{IDENT, \"user_2.name\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/_private - 1]
+[]string{"Token{IDENT, \"_private\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/obj.prop - 1]
+[]string{"Token{IDENT, \"obj.prop\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/prénom - 1]
+[]string{"Token{IDENT, \"prénom\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/имя - 1]
+[]string{"Token{IDENT, \"имя\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/prénom - 1]
+[]string{"Token{IDENT, \"prénom\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/1field - 1]
+[]string{"Token{VALUE, \"1field\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/*foo - 1]
+[]string{"Token{VALUE, \"*foo\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/* - 1]
+[]string{"Token{VALUE, \"*\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/.foo - 1]
+[]string{"Token{VALUE, \".foo\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/[world] - 1]
+[]string{"Token{VALUE, \"[world]\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/🇨🇦 - 1]
+[]string{"Token{VALUE, \"🇨🇦\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/� - 1]
+[]string{"Token{VALUE, \"�\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/́x - 1]
+[]string{"Token{VALUE, \"́x\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/foo* - 1]
+[]string{"Token{VALUE, \"foo*\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/foo-bar - 1]
+[]string{"Token{VALUE, \"foo-bar\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/AND_and_OR_or_NOT_not - 1]
+[]string{"Token{KEYWORD, \"AND\"}", "Token{KEYWORD, \"and\"}", "Token{KEYWORD, \"OR\"}", "Token{KEYWORD, \"or\"}", "Token{KEYWORD, \"NOT\"}", "Token{KEYWORD, \"not\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/And_Or_Not - 1]
+[]string{"Token{IDENT, \"And\"}", "Token{IDENT, \"Or\"}", "Token{IDENT, \"Not\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/ANDROID - 1]
+[]string{"Token{IDENT, \"ANDROID\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/a<=b - 1]
+[]string{"Token{IDENT, \"a\"}", "Token{OP, \"<=\"}", "Token{IDENT, \"b\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/a>=b - 1]
+[]string{"Token{IDENT, \"a\"}", "Token{OP, \">=\"}", "Token{IDENT, \"b\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/a!~b - 1]
+[]string{"Token{IDENT, \"a\"}", "Token{OP, \"!~\"}", "Token{IDENT, \"b\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/a>-5 - 1]
+[]string{"Token{IDENT, \"a\"}", "Token{OP, \">\"}", "Token{VALUE, \"-5\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/a<b<c - 1]
+[]string{"Token{IDENT, \"a\"}", "Token{OP, \"<\"}", "Token{IDENT, \"b\"}", "Token{OP, \"<\"}", "Token{IDENT, \"c\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/(a) - 1]
+[]string{"Token{LPAREN, \"(\"}", "Token{IDENT, \"a\"}", "Token{RPAREN, \")\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/-a - 1]
+[]string{"Token{KEYWORD, \"NOT\"}", "Token{IDENT, \"a\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/-_a - 1]
+[]string{"Token{KEYWORD, \"NOT\"}", "Token{IDENT, \"a\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/- - 1]
+[]string{"Token{KEYWORD, \"NOT\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/--5 - 1]
+[]string{"Token{KEYWORD, \"NOT\"}", "Token{VALUE, \"-5\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/-(a) - 1]
+[]string{"Token{KEYWORD, \"NOT\"}", "Token{LPAREN, \"(\"}", "Token{IDENT, \"a\"}", "Token{RPAREN, \")\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/"" - 1]
+[]string{"Token{STRING, \"\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/'' - 1]
+[]string{"Token{STRING, \"\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/'it\'s' - 1]
+[]string{"Token{STRING, \"it's\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/"say_'hi'" - 1]
+[]string{"Token{STRING, \"say 'hi'\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/"a\\b" - 1]
+[]string{"Token{STRING, \"a\\\\b\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/"a\nb" - 1]
+[]string{"Token{STRING, \"anb\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/"a_b"_c - 1]
+[]string{"Token{STRING, \"a b\"}", "Token{IDENT, \"c\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/a_b__c_ - 1]
+[]string{"Token{IDENT, \"a\"}", "Token{IDENT, \"b\"}", "Token{IDENT, \"c\"}", "Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/_____ - 1]
+[]string{"Token{EOF, \"\"}"}
+---
+
+[TestBasicLexer/a_b - 1]
+[]string{"Token{VALUE, \"a\\u00a0b\"}", "Token{EOF, \"\"}"}
+---
+
+[TestFailLexer/"foo - 1]
+[1:1] unterminated string
+---
+
+[TestFailLexer/'test\ - 1]
+[1:1] no character after escape
+---
+
+[TestFailLexer/foo!bar - 1]
+[1:4] operator ! must be followed by = or ~
+---
+
+[TestFailLexer/foo==bar - 1]
+[1:4] double == not allowed
+---
+
+[TestFailLexer/"foo\" - 1]
+[1:1] unterminated string
+---
+
+[TestFailLexer/'foo" - 1]
+[1:1] unterminated string
+---
+
+[TestFailLexer/a___b="x - 1]
+[2:5] unterminated string
+---
+
+[TestFailLexer/! - 1]
+[1:1] operator ! must be followed by = or ~
+---
+
+[TestFailLexer/foo! - 1]
+[1:4] operator ! must be followed by = or ~
+---
+
+[TestFailLexer/a_!_=_b - 1]
+[1:3] operator ! must be followed by = or ~
+---
+
+[TestFailLexer/foo\x00bar - 1]
+[1:4] NUL byte not allowed
+---
+
+[TestFailLexer/\x00 - 1]
+[1:1] NUL byte not allowed
+---
+
+[TestFailLexer/"a\x00b" - 1]
+[1:3] NUL byte not allowed
+---
+
+[TestFailLexer/a_b\x00 - 1]
+[1:4] NUL byte not allowed
+---
+
+[TestLexerPositions - 1]
+[]string{"f:1:1 IDENT \"ab\"", "f:2:3 IDENT \"cd\"", "f:2:6 OP \"=\"", "f:2:8 STRING \"x y\"", "f:3:1 LPAREN \"(\"", "f:3:2 IDENT \"e\"", "f:3:3 RPAREN \")\"", "f:3:4 EOF \"\""}
+---

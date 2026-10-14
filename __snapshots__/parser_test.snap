@@ -256,3 +256,279 @@ quickql.Expr{
   },
 }
 ---
+
+[TestParse/field1=x - 1]
+(= field1 "x")
+---
+
+[TestParse/user_2.name:bob - 1]
+(= user_2.name "bob")
+---
+
+[TestParse/prénom=Zoé - 1]
+(= prénom "Zoé")
+---
+
+[TestParse/a1_>_5_AND_b2_<_6 - 1]
+(and (> a1 "5") (< b2 "6"))
+---
+
+[TestParse/foo="" - 1]
+(= foo "")
+---
+
+[TestParse/foo=-5 - 1]
+(= foo "-5")
+---
+
+[TestParse/foo>=-0.5 - 1]
+(>= foo "-0.5")
+---
+
+[TestParse/foo=* - 1]
+(= foo "*")
+---
+
+[TestParse/foo_=_"a=b" - 1]
+(= foo "a=b")
+---
+
+[TestParse/foo_=_"AND" - 1]
+(= foo "AND")
+---
+
+[TestParse/_a___b_ - 1]
+(and (value a) (value b))
+---
+
+[TestParse/__a__ - 1]
+(value a)
+---
+
+[TestParse/a_and_b - 1]
+(and (value a) (value b))
+---
+
+[TestParse/a_or_b - 1]
+(or (value a) (value b))
+---
+
+[TestParse/not_a - 1]
+(NOT (value a))
+---
+
+[TestParse/a_And_b - 1]
+(and (value a) (value And) (value b))
+---
+
+[TestParse/ANDROID - 1]
+(value ANDROID)
+---
+
+[TestParse/-a - 1]
+(NOT (value a))
+---
+
+[TestParse/-_a - 1]
+(NOT (value a))
+---
+
+[TestParse/-(a_OR_b) - 1]
+(NOT (or (value a) (value b)))
+---
+
+[TestParse/NOT_a=1 - 1]
+(NOT (= a "1"))
+---
+
+[TestParse/--5 - 1]
+(NOT (value -5))
+---
+
+[TestParse/a_-5 - 1]
+(and (value a) (value -5))
+---
+
+[TestParse/-a_-b - 1]
+(and (NOT (value a)) (NOT (value b)))
+---
+
+[TestParse/a_OR_b_c - 1]
+(and (or (value a) (value b)) (value c))
+---
+
+[TestParse/a_b_OR_c - 1]
+(and (value a) (or (value b) (value c)))
+---
+
+[TestParse/a_OR_b_OR_c - 1]
+(or (value a) (value b) (value c))
+---
+
+[TestParse/NOT_a_OR_b - 1]
+(or (NOT (value a)) (value b))
+---
+
+[TestParse/(a) - 1]
+(value a)
+---
+
+[TestParse/(a)(b) - 1]
+(and (value a) (value b))
+---
+
+[TestParse/(a_OR_b)c - 1]
+(and (or (value a) (value b)) (value c))
+---
+
+[TestParse/(a_b)_OR_c - 1]
+(or (and (value a) (value b)) (value c))
+---
+
+[TestParseError/~ - 1]
+1:1: unexpected token "~"
+---
+
+[TestParseError/= - 1]
+1:1: unexpected token "="
+---
+
+[TestParseError/NOT - 1]
+1:4: unexpected token "<EOF>" (expected Primary)
+---
+
+[TestParseError/OR - 1]
+1:1: unexpected token "OR"
+---
+
+[TestParseError/OR_foo - 1]
+1:1: unexpected token "OR"
+---
+
+[TestParseError/(foo - 1]
+1:5: unexpected token "<EOF>" (expected ")")
+---
+
+[TestParseError/foo) - 1]
+1:4: unexpected token ")"
+---
+
+[TestParseError/foo= - 1]
+1:5: unexpected token "<EOF>" (expected Value)
+---
+
+[TestParseError/1field=x - 1]
+1:7: unexpected token "="
+---
+
+[TestParseError/*foo=x - 1]
+1:5: unexpected token "="
+---
+
+[TestParseError/"foo"=bar - 1]
+1:6: unexpected token "="
+---
+
+[TestParseError/and=1 - 1]
+1:1: unexpected token "and"
+---
+
+[TestParseError/foo-bar=x - 1]
+1:8: unexpected token "="
+---
+
+[TestParseError/foo=and - 1]
+1:5: unexpected token "and" (expected Value)
+---
+
+[TestParseError/foo=-bar - 1]
+1:5: unexpected token "NOT" (expected Value)
+---
+
+[TestParseError/foo=(bar) - 1]
+1:5: unexpected token "(" (expected Value)
+---
+
+[TestParseError/foo=bar=baz - 1]
+1:8: unexpected token "="
+---
+
+[TestParseError/a<b<c - 1]
+1:4: unexpected token "<"
+---
+
+[TestParseError/foo: - 1]
+1:5: unexpected token "<EOF>" (expected Value)
+---
+
+[TestParseError/foo::bar - 1]
+1:5: unexpected token "=" (expected Value)
+---
+
+[TestParseError/AND - 1]
+1:1: unexpected token "AND"
+---
+
+[TestParseError/a_AND - 1]
+1:6: unexpected token "<EOF>" (expected OrLogicExpr)
+---
+
+[TestParseError/a_OR - 1]
+1:5: unexpected token "<EOF>" (expected Primary)
+---
+
+[TestParseError/AND_a - 1]
+1:1: unexpected token "AND"
+---
+
+[TestParseError/a_AND_AND_b - 1]
+1:7: unexpected token "AND" (expected OrLogicExpr)
+---
+
+[TestParseError/a_OR_OR_b - 1]
+1:6: unexpected token "OR" (expected Primary)
+---
+
+[TestParseError/- - 1]
+1:2: unexpected token "<EOF>" (expected Primary)
+---
+
+[TestParseError/a_NOT - 1]
+1:6: unexpected token "<EOF>" (expected Primary)
+---
+
+[TestParseError/() - 1]
+1:2: unexpected token ")" (expected Expr ")")
+---
+
+[TestParseError/(a)) - 1]
+1:4: unexpected token ")"
+---
+
+[TestParseError/((a) - 1]
+1:5: unexpected token "<EOF>" (expected ")")
+---
+
+[TestParseError/) - 1]
+1:1: unexpected token ")"
+---
+
+[TestParseError/( - 1]
+1:2: unexpected token "<EOF>" (expected ")")
+---
+
+[TestParseError/foo!= - 1]
+1:6: unexpected token "<EOF>" (expected Value)
+---
+
+[TestParseError/a==b - 1]
+[1:2] double == not allowed
+---
+
+[TestParseError/"unterminated - 1]
+[1:1] unterminated string
+---
+
+[TestParseError/foo\x00bar - 1]
+[1:4] NUL byte not allowed
+---
