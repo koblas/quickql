@@ -8,7 +8,6 @@ import (
 
 	"github.com/gkampitakis/go-snaps/snaps"
 	"github.com/sanity-io/litter"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -231,18 +230,25 @@ func TestParseDeepNesting(t *testing.T) {
 }
 
 func TestParseConcurrent(t *testing.T) {
+	const workers = 32
+
+	got := make([]string, workers)
+	errs := make([]error, workers)
+
 	var wg sync.WaitGroup
-	for i := range 32 {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			input := fmt.Sprintf(`f%d = %d OR (g AND NOT h)`, i, i)
-			got, err := Parse(input)
-			assert.NoError(t, err)
-			assert.Equal(t, fmt.Sprintf(`(or (= f%d "%d") (and (value g) (NOT (value h))))`, i, i), got.AsSExpr())
-		}()
+	for i := range workers {
+		wg.Go(func() {
+			var expr Expr
+			expr, errs[i] = Parse(fmt.Sprintf(`f%d = %d OR (g AND NOT h)`, i, i))
+			got[i] = expr.AsSExpr()
+		})
 	}
 	wg.Wait()
+
+	for i := range workers {
+		require.NoError(t, errs[i])
+		require.Equal(t, fmt.Sprintf(`(or (= f%d "%d") (and (value g) (NOT (value h))))`, i, i), got[i])
+	}
 }
 
 func TestSmoke(t *testing.T) {
